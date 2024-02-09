@@ -1,3 +1,49 @@
+class One_complement:
+  def __init__(self, given_bin):
+    self.given_bin = given_bin
+
+  def switch(self):
+    pass
+
+class Two_complement:
+  def __init__(self, given_bin2):
+    self.given_bin2 = given_bin2
+
+  def switch(self):
+    pass
+
+class Addition:
+  def __init__(self, addendx, addendy):
+    self.addendx = addendx
+    self.addendy = addendy
+
+  def display_sum(self):
+    pass
+
+class Subtract:
+  def __init__(self, minuend, subtrahend):
+    self.minuend = minuend
+    self.subtrahend = subtrahend
+
+  def display_difference(self):
+    pass
+
+class Multiplication:
+  def __init__(self, multiplicand, multiplier):
+    self.multiplicand = multiplicand
+    self.multplier = multiplier
+
+  def product(self):
+    pass
+
+class Division:
+  def __init__(self, dividend, divisor):
+    self.dividend = dividend
+    self.divisor = divisor
+
+  def quotient(self):
+    pass
+  
 def menu1():
   print("Menu - 1 (Main Menu)")
   menu_choice = input(f"\n[1] Binary Operations \n[2] Number System Conversion \n[3] Exit \n")

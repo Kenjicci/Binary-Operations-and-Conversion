@@ -41,7 +41,7 @@ def count_decimal_places(num):
 
 class Addition:
   @staticmethod
-  def binary_addition(a_lpadded_bin, b_lpadded_bin):  # Added @staticmethod decorator
+  def binary_addition(a_lpadded_bin, b_lpadded_bin):
     max_len = max(len(a_lpadded_bin), len(b_lpadded_bin))
     result = ''
     carry = 0

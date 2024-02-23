@@ -1,3 +1,52 @@
+
+def count_decimal_places(num):
+  return len(num.split(".")[-1]) if "." in num else 0
+
+def add_sign_extension(binary_number):
+  
+    # Determine the sign extension based on the most significant bit
+    sign_extension = "1" if binary_number[0] == "1" else "0"
+    
+    # Remove spaces from the binary number
+    binary_number = binary_number.replace(" ", "")
+
+    # Separate the whole number part and the decimal part
+    parts = binary_number.split('.')
+    whole_number = parts[0]
+    decimal_part = parts[1] if len(parts) > 1 else ""
+
+    # Group the whole number part into sets of four bits from right to left
+    groups = []
+    current_group = ""
+    for bit in whole_number[::-1]:
+        current_group = bit + current_group
+        if len(current_group) == 4:
+            groups.insert(0, current_group)
+            current_group = ""
+    
+    # Add the last group
+    if current_group:
+        if len(current_group) < 4:
+            current_group = sign_extension * (4 - len(current_group)) + current_group
+        groups.insert(0, current_group)
+    
+    # Add an additional 4 bits of sign extension if the first group is 4 bits
+    if len(groups[0]) == 4:
+        groups.insert(0, sign_extension * 4)
+
+    # Reconstruct the whole number with the groups
+    whole_number_with_groups = ' '.join(groups)
+
+    # Reconstruct the binary number with the sign extension and the whole number with groups
+    result = f"{whole_number_with_groups}"
+
+    # Add the decimal part back if it exists
+    if decimal_part:
+        result += f".{decimal_part}"
+
+    return result 
+
+#CLASSES
 class One_complement:
   def __init__(self, given_bin):
     self.given_bin = given_bin
@@ -6,12 +55,6 @@ class One_complement:
     binlst = str(self.given_bin)
     rev_lst = [str(1 - int(i)) for i in binlst]
     return "".join(rev_lst)
-  """
-  test = input("Enter Binary number: ")
-  # test = 11001011
-  x = One_complement(test)
-  x.switch()
-  """
 
 class Two_complement:
   def __init__(self, given_bin2):
@@ -21,23 +64,19 @@ class Two_complement:
     binlst = self.given_bin2
     if '.' not in binlst:
       inverted_bin = One_complement(binlst).switch()
-      a = len(inverted_bin)  
-      padded_one = '0' * (a - 1) + '1'  
+      a = len(inverted_bin)
+      padded_one = '0' * (a - 1) + '1'      
       result = Addition.binary_addition(inverted_bin, padded_one)
       print(result)
-    elif "." in binlst:
+    elif "." in binlst:  
       deci_places = count_decimal_places(binlst)
       whole_bin = binlst.replace(".", "")
       inverted_bin = One_complement(whole_bin).switch()
-      a = len(whole_bin)  
-      padded_one = '0' * (a - 1) + '1'  
+      a = len(whole_bin)
+      padded_one = '0' * (a - 1) + '1'    
       result = Addition.binary_addition(inverted_bin, padded_one)
       result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
       print(result_with_dec)
-
-
-def count_decimal_places(num):
-  return len(num.split(".")[-1]) if "." in num else 0
 
 class Addition:
   @staticmethod
@@ -48,11 +87,10 @@ class Addition:
 
     for i in range(max_len - 1, -1, -1):
       r = carry
-      r += 1 if a_lpadded_bin[i] == '1' else 0
-      r += 1 if b_lpadded_bin[i] == '1' else 0
+      r += int(a_lpadded_bin[i]) if i < len(a_lpadded_bin) else 0
+      r += int(b_lpadded_bin[i]) if i < len(b_lpadded_bin) else 0
       result = ('1' if r % 2 == 1 else '0') + result
       carry = 0 if r < 2 else 1
-
     if carry != 0:
       result = '1' + result
 
@@ -87,12 +125,16 @@ class BintoX:
     self.giv_bin = giv_bin
 
   def convert_dec(self):
-    btd_lst = str(self.giv_bin)[::-1]
+    btd_lst,_, btd_flt = str(self.giv_bin).partition(".")
 #multiplying the bits by 2 raise to index
-    deci_lst = [(2**index)* int(btd_lst[index]) for index in range(len(btd_lst))]
+    deci_lst = [(2**index)* int(btd_lst[index]) for index in range(len(btd_lst[::-1]))]
     decimal = sum(deci_lst)
+#converting the fractional part
+    deci_frac = [((2**(-(index+1)))) * int(btd_flt[index]) for index in range(len(btd_flt))]
+    frac = sum(deci_frac)
+    result = decimal+frac
+    return f'{result}'
 
-    return decimal
 
   def convert_octal(self):
 
@@ -149,6 +191,115 @@ class BintoX:
     print(x.convert_octal())
     print(x.convert_hexa())
     """
+class XtoBin:
+  def __init__(self, given_bin):
+    self.given_bin = given_bin
+
+  def dec_bin(self):
+      dtb_int,_, dtb_flt = str(self.given_bin).partition(".")
+
+    #convert the int to bin
+      
+      # dtb_conv = sum(int(digit)* (2**(i + 1)) for i, digit in enumerate(dtb_int)[2:])
+      dtb_conv = bin(int(dtb_int))[2:]
+    #convert the fractional part
+      fractional_lst = []
+      if dtb_flt:
+        dtb_frac = float(f'0.{dtb_flt}')
+        fractional_lst = []
+        while dtb_frac !=0:
+          dtb_frac = dtb_frac*2
+          if dtb_frac >= 1:
+            fractional_lst.append('1')
+            dtb_frac = dtb_frac - 1
+          else:
+            fractional_lst.append('0')
+          if len(fractional_lst)>20:
+            break
+        
+        frac_final = ("".join(fractional_lst))
+        
+        final_result = str(dtb_conv) + '.' + frac_final
+
+        return final_result
+  def oct_bin(self):
+    pass
+
+  def hex_bin(self):
+    pass
+    
+# test = input("Enter Binary number:  ")
+# # test = 10100
+# x = BintoX(test)
+# print(x.convert_dec())
+# print(x.convert_octal())
+# print(x.convert_hexa())
+
+
+def main():
+  a = input("Addendx: ").replace(" ", "")
+  b = input("Addendy: ").replace(" ", "")
+  char = "."
+
+  deci_places1 = count_decimal_places(a)
+  deci_places2 = count_decimal_places(b)
+  max_deci_length = max(deci_places1, deci_places2)
+
+  a_padded = a + "0" * (max_deci_length - deci_places1)
+  b_padded = b + "0" * (max_deci_length - deci_places2)
+
+  a_rpadded_bin = a_padded.replace(char, "")
+  b_rpadded_bin = b_padded.replace(char, "")
+
+  max_len = max(len(a_rpadded_bin), len(b_rpadded_bin))
+  a_lpadded_bin = a_rpadded_bin.zfill(max_len)
+  b_lpadded_bin = b_rpadded_bin.zfill(max_len)
+
+  if char not in a and char not in b:
+    x = Addition.binary_addition(a, b)
+    if a[0] == '1' and b[0] == '1':
+      print(add_sign_extension(x))
+    elif a[0] == '0' and b[0] == '0':
+      new_x = x.zfill(len(x) + 1)
+      print(add_sign_extension(new_x))
+    elif a[0] == '1' and b[0] == '0':
+      if int(a, 2) > int(b, 2):
+        print(add_sign_extension(x))
+      else:
+        new_x = x.zfill(len(x) + 1)
+        print(add_sign_extension(new_x))
+    elif a[0] == '0' and b[0] == '1':
+      if int(a, 2) > int(b, 2):
+        new_x = x.zfill(len(x) + 1)
+        print(add_sign_extension(new_x))
+      else:
+        print(add_sign_extension(x))
+  elif char in a or char in b:
+    y = Addition.binary_addition(a_lpadded_bin, b_lpadded_bin)
+    final_answer = y[:-max_deci_length] + '.' + y[-max_deci_length:]
+    if a[0] == '1' and b[0] == '1':
+      print(add_sign_extension(final_answer))
+    elif a[0] == '0' and b[0] == '0':
+      new_final = final_answer.zfill(len(final_answer) + 1)
+      print(add_sign_extension(new_final))
+    elif a[0] == '1' and b[0] == '0':
+      new_a = BintoX(a)
+      new_b = BintoX(b)
+      if new_a.convert_dec() > new_b.convert_dec():
+        print(add_sign_extension(final_answer))
+      else:
+        y = final_answer.replace("1", "0", 1)
+        new_y = y.zfill(len(y) + 1)
+        print(add_sign_extension(new_y))
+    elif a[0] == '0' and b[0] == '1':
+      new_a = BintoX(a)
+      new_b = BintoX(b)
+      if new_a.convert_dec() > new_b.convert_dec():
+        y = final_answer.replace("1", "0", 1)
+        new_y = y.zfill(len(y) + 1)
+        print(add_sign_extension(new_y))
+      else:
+        print(add_sign_extension(final_answer))
 
 
 def menu1():
@@ -175,39 +326,8 @@ def menu2():
   elif menu2_choice == "3":
     pass
   elif menu2_choice == "4":
-
-    a = input("Addendx: ").replace(" ", "")
-    b = input("Addendy: ").replace(" ", "")
-
-    char = "."
-
-    # bilang ng number of decimals
-    deci_places1 = count_decimal_places(a)
-    deci_places2 = count_decimal_places(b)
-    max_deci_length = max(deci_places1, deci_places2)
-
-    # Pad numbers with trailing zeroes
-    a_padded = a + "0" * (max_deci_length - deci_places1)
-    b_padded = b + "0" * (max_deci_length - deci_places2)
-
-    #removing decimal points
-    a_rpadded_bin = a_padded.replace(char, "")
-    b_rpadded_bin = b_padded.replace(char, "")
-
-    #padding left side 
-    max_len = max(len(a_rpadded_bin), len(b_rpadded_bin))
-    a_lpadded_bin = a_rpadded_bin.zfill(max_len)
-    b_lpadded_bin = b_rpadded_bin.zfill(max_len)
-
-    #add the decimal point
-    if char not in a and char not in b:
-        x = Addition.binary_addition(a,b)
-        print(x)
-    elif char in a or char in b:
-        y = Addition.binary_addition(a_lpadded_bin, b_lpadded_bin)
-        final_answer= y[:-max_deci_length]+'.'+ y[-max_deci_length:]
-        print(final_answer)
-
+    if __name__ == "__main__":
+      main()
   elif menu2_choice == "5":
     binlst = input("Binary to Two's Complement: ").replace(" ", "")
     twoscomp = Two_complement(binlst).switch()

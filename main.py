@@ -166,28 +166,28 @@ class Addition:
     return result.zfill(max_len)
 
 class Subtraction:
-    @staticmethod
-    def binary_subtraction(minuend, subtrahend):
-        result = []
-        borrow = 0
-        for i in range(len(minuend) - 1, -1, -1):
-            if minuend[i] == ".":
-                result.insert(0, ".")
-                continue
+  @staticmethod
+  def binary_subtraction(minuend, subtrahend):
+      result = []
+      borrow = 0
+      for i in range(len(minuend) - 1, -1, -1):
+        if minuend[i] == ".":
+          result.insert(0, ".")
+          continue
 
-            minuend_bit = int(minuend[i])
-            subtrahend_bit = int(subtrahend[i])
+        minuend_bit = int(minuend[i])
+        subtrahend_bit = int(subtrahend[i])
 
             # Para sa borrow
-            minuend_bit -= borrow
-            borrow = 0
+        minuend_bit -= borrow
+        borrow = 0
 
             # Check if subtraction is possible
-            if minuend_bit < subtrahend_bit:
-                minuend_bit += 2  # Add 2 to for borrowing
-                borrow = 1
+        if minuend_bit < subtrahend_bit:
+          minuend_bit += 2  # Add 2 to for borrowing
+          borrow = 1
 
-            result.insert(0, str(minuend_bit - subtrahend_bit))
+          result.insert(0, str(minuend_bit - subtrahend_bit))
 
         return ''.join(result).lstrip('0') or '0'
   @staticmethod
@@ -444,6 +444,49 @@ def perform_binary_addition():
       else:
         print(add_sign_extension(final_answer))
 
+class BintoX:
+  def __init__(self,giv_bin):
+    self.giv_bin = giv_bin
+
+  def convert_dec(self):
+
+    integer_part, _, fractional_part = str(self.giv_bin).partition('.')
+    
+    # Convert integer part to decimal
+    integer_dec = int(integer_part, 2)
+    
+    # Convert fractional part to decimal
+    fractional_dec = 0
+    if fractional_part:
+        fraction = float('0.' + fractional_part)
+        for i, digit in enumerate(fractional_part, 1):
+            fractional_dec += int(digit) * (2 ** (-i))
+    
+    # Return the sum of integer and fractional parts
+    return integer_dec + fractional_dec
+
+  def convert_octal(self, precision=6):
+    integer_part, _, fractional_part = str(self.giv_bin).partition('.')
+    
+    # Convert integer part to decimal
+    integer_decimal = int(integer_part, 2)
+    integer_octal = oct(integer_decimal)[2:]
+    
+    # Convert fractional part to decimal
+    fractional_octal = ''
+    if fractional_part:
+        fractional_octal += '.'  # Start fractional part
+        fraction = sum(int(digit) / (2 ** i) for i, digit in enumerate(fractional_part, start=1))
+        for _ in range(precision):
+            fraction *= 8
+            integer_part = int(fraction)
+            fractional_octal += str(integer_part)
+            fraction -= integer_part
+
+    return integer_octal + fractional_octal
+
+
+
   def convert_hexa(self, precision=6):
     integer_part, _, fractional_part = str(self.giv_bin).partition('.')
     
@@ -567,7 +610,7 @@ class XtoBin:
 
 
   def hex_bin(self):
-    htb_int, _, htb_frac = str(self.given_bin).upper().partition(".") 
+    htb_int, _, htb_frac = str(self.given_bin).upper().partition(".")    
     htb_lst = []
     htb_fracfin = []
 #hex map

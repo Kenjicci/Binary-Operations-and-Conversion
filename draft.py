@@ -22,14 +22,15 @@ class BintoX:
   def convert_octal(self, precision=6):
     integer_part, _, fractional_part = str(self.giv_bin).partition('.')
     
-    # Convert integer part to octal
-    integer_octal = oct(int(integer_part, 2))[2:]
+    # Convert integer part to decimal
+    integer_decimal = int(integer_part, 2)
+    integer_octal = oct(integer_decimal)[2:]
     
-    # Convert fractional part to octal
+    # Convert fractional part to decimal
     fractional_octal = ''
     if fractional_part:
         fractional_octal += '.'  # Start fractional part
-        fraction = float('0.' + fractional_part)
+        fraction = sum(int(digit) / (2 ** i) for i, digit in enumerate(fractional_part, start=1))
         for _ in range(precision):
             fraction *= 8
             integer_part = int(fraction)
@@ -38,17 +39,20 @@ class BintoX:
 
     return integer_octal + fractional_octal
 
+
+
   def convert_hexa(self, precision=6):
     integer_part, _, fractional_part = str(self.giv_bin).partition('.')
     
     # Convert integer part to hexadecimal
     integer_hex = hex(int(integer_part, 2))[2:]
+    integer_decimal = int(integer_part, 2)
     
     # Convert fractional part to hexadecimal
     fractional_hex = ''
     if fractional_part:
         fractional_hex += '.'  # Start fractional part
-        fraction = float('0.' + fractional_part)
+        fraction = sum(int(digit) / (2 ** i) for i, digit in enumerate(fractional_part, start=1))
         for _ in range(precision):
             fraction *= 16
             integer_part = int(fraction)
@@ -57,47 +61,46 @@ class BintoX:
 
     return integer_hex + fractional_hex
 
-# def bin_to_x():
-test = input("Enter Binary number:  ")
-x = BintoX(test)
-print(f'Decimal: {x.convert_dec()}')
-print(f'Octal: {x.convert_octal()}')
-print(f'Hexadecimal: {x.convert_hexa()}')
+def bin_to_x():
+  test = input("Enter Binary number:  ")
+  x = BintoX(test)
+  print(f'Decimal: {x.convert_dec()}')
+  print(f'Octal: {x.convert_octal()}')
+  print(f'Hexadecimal: {x.convert_hexa()}')
 
 
-# bin_to_x()
+bin_to_x()
 
 class XtoBin:
   def __init__(self, given_bin):
     self.given_bin = given_bin
 
   def dec_bin(self):
-      dtb_int,_, dtb_flt = str(self.given_bin).partition(".")
+    dtb_int, _, dtb_flt = str(self.given_bin).partition(".")
 
-    #convert the int to bin
-      
-      # dtb_conv = sum(int(digit)* (2**(i + 1)) for i, digit in enumerate(dtb_int)[2:])
-      dtb_conv = bin(int(dtb_int))
-    #convert the fractional part
-      fractional_lst = []
-      if dtb_flt:
-        dtb_frac = float(f'0.{dtb_flt}')
-        fractional_lst = []
-        while dtb_frac !=0:
-          dtb_frac = dtb_frac*2
-          if dtb_frac >= 1:
-            fractional_lst.append('1')
-            dtb_frac = dtb_frac - 1
-          else:
-            fractional_lst.append('0')
-          if len(fractional_lst)>20:
-            break
+    # Convert the integer part to binary
+    dtb_conv = bin(int(dtb_int))[2:]
+
+    # Convert the fractional part
+    fractional_lst = []
+    if dtb_flt:
+        dtb_frac = float('0.' + dtb_flt)
+        while dtb_frac != 0:
+            dtb_frac = dtb_frac * 2
+            if dtb_frac >= 1:
+                fractional_lst.append('1')
+                dtb_frac = dtb_frac - 1
+            else:
+                fractional_lst.append('0')
+            if len(fractional_lst) > 20:
+                break
         
-        frac_final = ("".join(fractional_lst))
-#combine decimal and fractional result
-        final_result = str(dtb_conv) + '.' + frac_final
-#return final result
-        return final_result
+    frac_final = ("".join(fractional_lst))
+    # Combine decimal and fractional result
+    final_result = dtb_conv + '.' + frac_final
+
+    # Return final result
+    return final_result
       
   def oct_bin(self):
     otb_int, _, otb_frac = str(self.given_bin).partition(".")    
@@ -165,14 +168,12 @@ class XtoBin:
     
 #return hex value
     return hex_final
-      
+  
 def deci_to_x():
   test = input("Enter Decimal number:  ")
   x = XtoBin(test)
   decbin = x.dec_bin()
-  y = BintoX(decbin)
-  print(f'Decimal: {x.dec_bin()}')
-  print(f'{y.convert_octal()}')
-  print(f'{y.convert_hexa()}')
-
+  print(f'Binary : {x.dec_bin()}')
+  
 deci_to_x()
+      

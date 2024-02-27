@@ -1,84 +1,12 @@
-
 def count_decimal_places(num):
   return len(num.split(".")[-1]) if "." in num else 0
 
 def add_sign_extension(binary_number):
-    # Separate the whole number part and the decimal part
-    parts = binary_number.split('.')
-    whole_number = parts[0]
-    decimal_part = parts[1] if len(parts) > 1 else None
-
-    # Determine the sign extension based on the most significant bit of the whole number
-    sign_extension = "1" if whole_number[0] == "1" else "0"
-
-    # Remove spaces from the binary number
-    binary_number = binary_number.replace(" ", "")
-
-    # Group the whole number part into sets of four bits from right to left
-    groups = []
-    current_group = ""
-    for bit in whole_number[::-1]:
-        current_group = bit + current_group
-        if len(current_group) == 4:
-            groups.insert(0, current_group)
-            current_group = ""
-
-    # Add the last group
-    if current_group:
-        if len(current_group) < 4:
-            current_group = sign_extension * (4 - len(current_group)) + current_group
-        groups.insert(0, current_group)
-
-    # Add an additional 4 bits of sign extension if the first group is 4 bits
-    if len(groups[0]) == 4:
-        groups.insert(0, sign_extension * 4)
-
-    # Reconstruct the whole number with the groups
-    whole_number_with_groups = ' '.join(groups)
-
-    # Reconstruct the binary number with the sign extension and the whole number with groups
-    result = f"{whole_number_with_groups}"
-
-    # Add the decimal part back if it exists
-    if decimal_part:
-        result += f".{decimal_part}"
-
-    return result
-
-
-#CLASSES
-class One_complement:
-  def __init__(self, given_bin):
-    self.given_bin = given_bin
-
-  def switch(self):
-    binlst = str(self.given_bin)
-    rev_lst = [str(1 - int(i)) for i in binlst]
-    return "".join(rev_lst)
-    binlst,_, binflt = str(self.given_bin).partition(".")
-    rev_bin = [str(1 - int(i)) for i in binlst]
-    rev_frac = [str(1 - int(i)) for i in binflt]
-    binint=("".join(rev_bin))
-    binflt=("".join(rev_frac))
-    return f'{binint}.{binflt}'
-
-def count_decimal_places(num):
-  return len(num.split(".")[-1]) if "." in num else 0
-
-def add_sign_extension(binary_number):
-  
-    # Determine the sign extension based on the most significant bit
     sign_extension = "1" if binary_number[0] == "1" else "0"
-    
-    # Remove spaces from the binary number
     binary_number = binary_number.replace(" ", "")
-
-    # Separate the whole number part and the decimal part
     parts = binary_number.split('.')
     whole_number = parts[0]
     decimal_part = parts[1] if len(parts) > 1 else ""
-
-    # Group the whole number part into sets of four bits from right to left
     groups = []
     current_group = ""
     for bit in whole_number[::-1]:
@@ -86,230 +14,130 @@ def add_sign_extension(binary_number):
         if len(current_group) == 4:
             groups.insert(0, current_group)
             current_group = ""
-    
-    # Add the last group
     if current_group:
         if len(current_group) < 4:
             current_group = sign_extension * (4 - len(current_group)) + current_group
         groups.insert(0, current_group)
-    
-    # Add an additional 4 bits of sign extension if the first group is 4 bits
     if len(groups[0]) == 4:
         groups.insert(0, sign_extension * 4)
-
-    # Reconstruct the whole number with the groups
     whole_number_with_groups = ' '.join(groups)
-
-    # Reconstruct the binary number with the sign extension and the whole number with groups
     result = f"{whole_number_with_groups}"
-
-    # Add the decimal part back if it exists
     if decimal_part:
         result += f".{decimal_part}"
+    return result
 
-    return result 
+def perform_binary_multiplication():
+    multiplicand = input("Multiplicand: ").replace(" ", '')
+    multiplier = input("Multiplier: ").replace(" ", '')
 
-class Two_complement:
-  def __init__(self, given_bin2):
-    self.given_bin2 = given_bin2
+    removed_dec_multiplicand = multiplicand.replace(".", "")
+    removed_dec_multiplier = multiplier.replace(".", "")
 
-  def switch(self):
-    binlst = self.given_bin2
-    if '.' not in binlst:
-      inverted_bin = One_complement(binlst).switch()
-      a = len(inverted_bin)
-      padded_one = '0' * (a - 1) + '1'      
-      result = Addition.binary_addition(inverted_bin, padded_one)
-      return result
-    elif "." in binlst:  
-      deci_places = count_decimal_places(binlst)
-      whole_bin = binlst.replace(".", "")
-      inverted_bin = One_complement(whole_bin).switch()
-      a = len(whole_bin)
-      padded_one = '0' * (a - 1) + '1'    
-      result = Addition.binary_addition(inverted_bin, padded_one)
-      result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
-      return result_with_dec
-    binlst = self.given_bin2
-    if '.' not in binlst:
-      inverted_bin = One_complement(binlst).switch()
-      a = len(inverted_bin)
-      padded_one = '0' * (a - 1) + '1'      
-      result = Addition.binary_addition(inverted_bin, padded_one)
-      print(result)
-    elif "." in binlst:  
-      deci_places = count_decimal_places(binlst)
-      whole_bin = binlst.replace(".", "")
-      inverted_bin = One_complement(whole_bin).switch()
-      a = len(whole_bin)
-      padded_one = '0' * (a - 1) + '1'    
-      result = Addition.binary_addition(inverted_bin, padded_one)
-      result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
-      print(result_with_dec)
+    deci_places = count_decimal_places(multiplicand) + count_decimal_places(multiplier)
+    char = "."
 
-class Addition:
-  @staticmethod
-  def binary_addition(a_lpadded_bin, b_lpadded_bin):
-    max_len = max(len(a_lpadded_bin), len(b_lpadded_bin))
-    result = ''
-    carry = 0
+    if char in multiplicand and char in multiplier:
+        if multiplicand[0] == "0" and multiplier[0] == "1":
+           new_multiplier = Two_complement(removed_dec_multiplier).switch()
+           x = Multiplication(removed_dec_multiplicand, new_multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           z = y[:-deci_places] + "." + y[-deci_places:]
+           print(add_sign_extension(z))
 
-    for i in range(max_len - 1, -1, -1):
-      r = carry
-      r += int(a_lpadded_bin[i]) if i < len(a_lpadded_bin) else 0
-      r += int(b_lpadded_bin[i]) if i < len(b_lpadded_bin) else 0
-      result = ('1' if r % 2 == 1 else '0') + result
-      carry = 0 if r < 2 else 1
-    if carry != 0:
-      result = '1' + result
+        elif multiplicand[0] == "1" and multiplier[0] == "0":
+           new_multiplicand = Two_complement(removed_dec_multiplicand).switch()
+           x = Multiplication(new_multiplicand, removed_dec_multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           z = y[:-deci_places] + "." + y[-deci_places:]
+           print(add_sign_extension(z))
 
-    return result.zfill(max_len)
+        elif multiplicand[0] == "1" and multiplier[0] == "1":
+            x = Multiplication(removed_dec_multiplicand, removed_dec_multiplier).multiply_binary()
+            z = x[:-deci_places] + "." + x[-deci_places:]
+            print(add_sign_extension(z))
+        else:
+            x = Multiplication(removed_dec_multiplicand, removed_dec_multiplier).multiply_binary()
+            z = x[:-deci_places] + "." + x[-deci_places:]
+            print(add_sign_extension(z))
 
-class Subtraction:
-  @staticmethod
-  def binary_subtraction(minuend, subtrahend):
-      result = []
-      borrow = 0
-      for i in range(len(minuend) - 1, -1, -1):
-        if minuend[i] == ".":
-          result.insert(0, ".")
-          continue
+    elif char in multiplicand and char not in multiplier:
+        if multiplicand[0] == "0" and multiplier[0] == "1":
+           new_multiplier = Two_complement(multiplier).switch()
+           x = Multiplication(removed_dec_multiplicand, new_multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           z = y[:-deci_places] + "." + y[-deci_places:]
+           print(add_sign_extension(z))
 
-        minuend_bit = int(minuend[i])
-        subtrahend_bit = int(subtrahend[i])
+        elif multiplicand[0] == "1" and multiplier[0] == "0":
+           new_multiplicand = Two_complement(removed_dec_multiplicand).switch()
+           x = Multiplication(new_multiplicand, multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           z = y[:-deci_places] + "." + y[-deci_places:]
+           print(add_sign_extension(z))
 
-            # Para sa borrow
-        minuend_bit -= borrow
-        borrow = 0
+        elif multiplicand[0] == "1" and multiplier[0] == "1":
+            twos_multiplicand = Two_complement(removed_dec_multiplicand).switch()
+            twos_multiplier = Two_complement(multiplier).switch()
+            x = Multiplication(twos_multiplicand, twos_multiplier).multiply_binary()
+            z = x[:-deci_places] + "." + x[-deci_places:]
+            print(add_sign_extension(z))
 
-            # Check if subtraction is possible
-        if minuend_bit < subtrahend_bit:
-          minuend_bit += 2  # Add 2 to for borrowing
-          borrow = 1
-
-          result.insert(0, str(minuend_bit - subtrahend_bit))
-
-        return ''.join(result).lstrip('0') or '0'
-  @staticmethod
-  def binary_addition(a_lpadded_bin, b_lpadded_bin):
-    max_len = max(len(a_lpadded_bin), len(b_lpadded_bin))
-    result = ''
-    carry = 0
-
-    for i in range(max_len - 1, -1, -1):
-      r = carry
-      r += int(a_lpadded_bin[i]) if i < len(a_lpadded_bin) else 0
-      r += int(b_lpadded_bin[i]) if i < len(b_lpadded_bin) else 0
-      result = ('1' if r % 2 == 1 else '0') + result
-      carry = 0 if r < 2 else 1
-    if carry != 0:
-      result = '1' + result
-
-    return result.zfill(max_len)
-
-class Subtract:
-  def __init__(self, minuend, subtrahend):
-    self.minuend = minuend
-    self.subtrahend = subtrahend
-
-  def display_difference(self):
-    pass
-
-class Multiplication:
-  def __init__(self, multiplicand, multiplier):
-    self.multiplicand = multiplicand
-    self.multplier = multiplier
-
-  def product(self):
-    pass
-
-class Division:
-  def __init__(self, dividend, divisor):
-    self.dividend = dividend
-    self.divisor = divisor
-
-  def quotient(self):
-    pass
-  
-class BintoX:
-  def __init__(self,giv_bin):
-    self.giv_bin = giv_bin
-
-  def convert_dec(self):
-
-    integer_part, _, fractional_part = str(self.giv_bin).partition('.')
-    
-    # Convert integer part to decimal
-    integer_dec = int(integer_part, 2)
-    
-    # Convert fractional part to decimal
-    fractional_dec = 0
-    if fractional_part:
-        fraction = float('0.' + fractional_part)
-        for i, digit in enumerate(fractional_part, 1):
-            fractional_dec += int(digit) * (2 ** (-i))
-    
-    # Return the sum of integer and fractional parts
-    return integer_dec + fractional_dec
-
-  def convert_octal(self, precision=6):
-    integer_part, _, fractional_part = str(self.giv_bin).partition('.')
-    
-    # Convert integer part to decimal
-    integer_decimal = int(integer_part, 2)
-    integer_octal = oct(integer_decimal)[2:]
-    
-    # Convert fractional part to decimal
-    fractional_octal = ''
-    if fractional_part:
-        fractional_octal += '.'  # Start fractional part
-        fraction = sum(int(digit) / (2 ** i) for i, digit in enumerate(fractional_part, start=1))
-        for _ in range(precision):
-            fraction *= 8
-            integer_part = int(fraction)
-            fractional_octal += str(integer_part)
-            fraction -= integer_part
-
-    return integer_octal + fractional_octal
+        else:
+            x = Multiplication(removed_dec_multiplicand, multiplier).multiply_binary()
+            z = x[:-deci_places] + "." + x[-deci_places:]
+            print(add_sign_extension(z))
 
 
+    elif char not in multiplicand and char in multiplier:
+        if multiplicand[0] == "0" and multiplier[0] == "1":
+           new_multiplier = Two_complement(removed_dec_multiplier).switch()
+           x = Multiplication(multiplicand, new_multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           z = y[:-deci_places] + "." + y[-deci_places:]
+           print(add_sign_extension(z))
 
-  def convert_hexa(self):
+        elif multiplicand[0] == "1" and multiplier[0] == "0":
+           new_multiplicand = Two_complement(multiplicand).switch()
+           x = Multiplication(new_multiplicand, removed_dec_multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           z = y[:-deci_places] + "." + y[-deci_places:]
+           print(add_sign_extension(z))
 
-    bth_lst = '0' * (4 - (len(str(self.giv_bin)))% 4) + str(self.giv_bin)
-#initializing hex value
-    hex_sum = ""
+        elif multiplicand[0] == "1" and multiplier[0] == "1":
+           new_multiplicand = Two_complement(multiplicand).switch()
+           new_multiplier = Two_complement(removed_dec_multiplier).switch()
+           x = Multiplication(new_multiplicand, new_multiplier).multiply_binary()
+           z = x[:-deci_places] + "." + x[-deci_places:]
+           print(add_sign_extension(z))
 
-    for i in range(len(bth_lst), 0, -4):
+        else:
+            x = Multiplication(multiplicand, removed_dec_multiplier).multiply_binary()
+            z = x[:-deci_places] + "." + x[-deci_places:]
+            print(add_sign_extension(z))
 
-      grp_lst = bth_lst[max(0, i-4):i]
-      # hex_val = {10:"A", 11:"B", 12:"C", 13:"D", 14:"E", 15:"F"}
-      hex_lst = sum(int(num) * ( 2**(i%4)) for i, num in enumerate(grp_lst[::-1]))
-      # hexa conditions
-      if hex_lst == 10:
-        hex_lst = 'A'
-      elif hex_lst ==11:
-        hex_lst = 'B'
-      elif hex_lst ==12:
-        hex_lst = 'C'
-      elif hex_lst ==13:
-        hex_lst = 'D'
-      elif hex_lst ==14:
-        hex_lst = 'E'
-      elif hex_lst ==15:
-        hex_lst = 'F'
+    else:
+        if multiplicand[0] == "0" and multiplier[0] == "1":
+           new_multiplier = Two_complement(multiplier).switch()
+           x = Multiplication(multiplicand, new_multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           print(add_sign_extension(y))
 
-      hex_sum = str(hex_lst) + hex_sum
-    #return value
-    return hex_sum
-    """    
-    test = input("Enter Binary number:  ")
-    # test = 10100
-    x = BintoX(test)
-    print(x.convert_dec())
-    print(x.convert_octal())
-    print(x.convert_hexa())
-    """
+        elif multiplicand[0] == "1" and multiplier[0] == "0":
+           new_multiplicand = Two_complement(multiplicand).switch()
+           x = Multiplication(new_multiplicand, multiplier).multiply_binary()
+           y = Two_complement(x).switch()
+           print(add_sign_extension(y))
+
+        elif multiplicand[0] == "1" and multiplier[0] == "1":
+           new_multiplicand = Two_complement(multiplicand).switch()
+           new_multiplier = Two_complement(multiplier).switch()
+           x = Multiplication(new_multiplicand, new_multiplier).multiply_binary()
+           print(add_sign_extension(x))
+
+        else:
+            x = Multiplication(multiplicand, multiplier).multiply_binary()
+            print(add_sign_extension(x))
+
 def perform_binary_subtraction():
     minuend = input("Minuend: ").replace(" ", "")
     subtrahend = input("Subtrahend: ").replace(" ", "")
@@ -444,6 +272,139 @@ def perform_binary_addition():
       else:
         print(add_sign_extension(final_answer))
 
+#CLASSES
+class One_complement:
+  def __init__(self, given_bin):
+    self.given_bin = given_bin
+
+  def switch(self):
+    binlst = str(self.given_bin)
+    rev_lst = [str(1 - int(i)) for i in binlst]
+    return "".join(rev_lst)
+    binlst,_, binflt = str(self.given_bin).partition(".")
+    rev_bin = [str(1 - int(i)) for i in binlst]
+    rev_frac = [str(1 - int(i)) for i in binflt]
+    binint=("".join(rev_bin))
+    binflt=("".join(rev_frac))
+    return f'{binint}.{binflt}'
+
+class Two_complement:
+  def __init__(self, given_bin2):
+    self.given_bin2 = given_bin2
+
+  def switch(self):
+    binlst = self.given_bin2
+    if '.' not in binlst:
+      inverted_bin = One_complement(binlst).switch()
+      a = len(inverted_bin)
+      padded_one = '0' * (a - 1) + '1'      
+      result = Addition.binary_addition(inverted_bin, padded_one)
+      return result
+    elif "." in binlst:  
+      deci_places = count_decimal_places(binlst)
+      whole_bin = binlst.replace(".", "")
+      inverted_bin = One_complement(whole_bin).switch()
+      a = len(whole_bin)
+      padded_one = '0' * (a - 1) + '1'    
+      result = Addition.binary_addition(inverted_bin, padded_one)
+      result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
+      return result_with_dec
+    binlst = self.given_bin2
+    if '.' not in binlst:
+      inverted_bin = One_complement(binlst).switch()
+      a = len(inverted_bin)
+      padded_one = '0' * (a - 1) + '1'      
+      result = Addition.binary_addition(inverted_bin, padded_one)
+      print(result)
+    elif "." in binlst:  
+      deci_places = count_decimal_places(binlst)
+      whole_bin = binlst.replace(".", "")
+      inverted_bin = One_complement(whole_bin).switch()
+      a = len(whole_bin)
+      padded_one = '0' * (a - 1) + '1'    
+      result = Addition.binary_addition(inverted_bin, padded_one)
+      result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
+      print(result_with_dec)
+
+class Addition:
+  @staticmethod
+  def binary_addition(a_lpadded_bin, b_lpadded_bin):
+    max_len = max(len(a_lpadded_bin), len(b_lpadded_bin))
+    result = ''
+    carry = 0
+
+    for i in range(max_len - 1, -1, -1):
+      r = carry
+      r += int(a_lpadded_bin[i]) if i < len(a_lpadded_bin) else 0
+      r += int(b_lpadded_bin[i]) if i < len(b_lpadded_bin) else 0
+      result = ('1' if r % 2 == 1 else '0') + result
+      carry = 0 if r < 2 else 1
+    if carry != 0:
+      result = '1' + result
+
+    return result.zfill(max_len)
+
+class Subtraction:
+    @staticmethod
+    def binary_subtraction(minuend, subtrahend):
+        result = []
+        borrow = 0
+        for i in range(len(minuend) - 1, -1, -1):
+            if minuend[i] == ".":
+                result.insert(0, ".")
+                continue
+
+            minuend_bit = int(minuend[i])
+            subtrahend_bit = int(subtrahend[i])
+
+            # Para sa borrow
+            minuend_bit -= borrow
+            borrow = 0
+
+            # Check if subtraction is possible
+            if minuend_bit < subtrahend_bit:
+                minuend_bit += 2  # Add 2 to for borrowing
+                borrow = 1
+
+            result.insert(0, str(minuend_bit - subtrahend_bit))
+
+        return ''.join(result).lstrip('0') or '0'
+
+class Multiplication:
+    def __init__(self, multiplicand, multiplier):
+        self.multiplicand = multiplicand
+        self.multiplier = multiplier
+
+    def multiply_binary(self):
+        num1 = int(self.multiplicand, 2)
+        num2 = int(self.multiplier, 2)
+        result = 0
+        leading_zeroes = self.count_leading_zeroes(self.multiplicand) + self.count_leading_zeroes(self.multiplier)
+        while num2 > 0:
+            if num2 & 1:
+                result += num1
+            num1 <<= 1
+            num2 >>= 1
+        result_str = bin(result)[2:]
+        return '0' * leading_zeroes + result_str
+
+    def count_leading_zeroes(self, binary_num):
+        count = 0
+        for bit in binary_num:
+            if bit == '0':
+                count += 1
+            else:
+                break
+        return count
+    
+class Division:
+  def __init__(self, dividend, divisor):
+    self.dividend = dividend
+    self.divisor = divisor
+
+  def quotient(self):
+    pass
+ 
 class BintoX:
   def __init__(self,giv_bin):
     self.giv_bin = giv_bin
@@ -484,8 +445,6 @@ class BintoX:
             fraction -= integer_part
 
     return integer_octal + fractional_octal
-
-
 
   def convert_hexa(self, precision=6):
     integer_part, _, fractional_part = str(self.giv_bin).partition('.')
@@ -539,7 +498,8 @@ class XtoBin:
     return integer_hex + fractional_hex
 
 # def bin_to_x():
-test = input("Enter Binary number:  ")
+
+#test = input("Enter Binary number:  ")
 # x = BintoX(test)
 # print(f'Decimal: {x.convert_dec()}')
 # print(f'Octal: {x.convert_octal()}')
@@ -681,73 +641,6 @@ def hex_to_x():
   print(f'Decimal: {y.convert_dec()}')
   print(f'Octal: {y.convert_octal()}')
 
-
-def main():
-  a = input("Addendx: ").replace(" ", "")
-  b = input("Addendy: ").replace(" ", "")
-  char = "."
-
-  deci_places1 = count_decimal_places(a)
-  deci_places2 = count_decimal_places(b)
-  max_deci_length = max(deci_places1, deci_places2)
-
-  a_padded = a + "0" * (max_deci_length - deci_places1)
-  b_padded = b + "0" * (max_deci_length - deci_places2)
-
-  a_rpadded_bin = a_padded.replace(char, "")
-  b_rpadded_bin = b_padded.replace(char, "")
-
-  max_len = max(len(a_rpadded_bin), len(b_rpadded_bin))
-  a_lpadded_bin = a_rpadded_bin.zfill(max_len)
-  b_lpadded_bin = b_rpadded_bin.zfill(max_len)
-
-  if char not in a and char not in b:
-    x = Addition.binary_addition(a, b)
-    if a[0] == '1' and b[0] == '1':
-      print(add_sign_extension(x))
-    elif a[0] == '0' and b[0] == '0':
-      new_x = x.zfill(len(x) + 1)
-      print(add_sign_extension(new_x))
-    elif a[0] == '1' and b[0] == '0':
-      if int(a, 2) > int(b, 2):
-        print(add_sign_extension(x))
-      else:
-        new_x = x.zfill(len(x) + 1)
-        print(add_sign_extension(new_x))
-    elif a[0] == '0' and b[0] == '1':
-      if int(a, 2) > int(b, 2):
-        new_x = x.zfill(len(x) + 1)
-        print(add_sign_extension(new_x))
-      else:
-        print(add_sign_extension(x))
-  elif char in a or char in b:
-    y = Addition.binary_addition(a_lpadded_bin, b_lpadded_bin)
-    final_answer = y[:-max_deci_length] + '.' + y[-max_deci_length:]
-    if a[0] == '1' and b[0] == '1':
-      print(add_sign_extension(final_answer))
-    elif a[0] == '0' and b[0] == '0':
-      new_final = final_answer.zfill(len(final_answer) + 1)
-      print(add_sign_extension(new_final))
-    elif a[0] == '1' and b[0] == '0':
-      new_a = BintoX(a)
-      new_b = BintoX(b)
-      if new_a.convert_dec() > new_b.convert_dec():
-        print(add_sign_extension(final_answer))
-      else:
-        y = final_answer.replace("1", "0", 1)
-        new_y = y.zfill(len(y) + 1)
-        print(add_sign_extension(new_y))
-    elif a[0] == '0' and b[0] == '1':
-      new_a = BintoX(a)
-      new_b = BintoX(b)
-      if new_a.convert_dec() > new_b.convert_dec():
-        y = final_answer.replace("1", "0", 1)
-        new_y = y.zfill(len(y) + 1)
-        print(add_sign_extension(new_y))
-      else:
-        print(add_sign_extension(final_answer))
-
-
 def menu1():
   print("Menu - (Main Menu)")
   menu_choice = input(f"\n[1] Binary Operations \n[2] Number System Conversion \n[3] Exit \n")
@@ -761,43 +654,23 @@ def menu1():
 
 
 
-
 def menu2():
   print("Menu - 1 (Binary Operations)")
   menu2_choice = input(f"\n[1] Division \n[2] Multiplication \n[3] Subtraction \n[4] Addition \n[5] Negative (2's Complement) \n")
   if menu2_choice == "1":
     pass
   elif menu2_choice == "2":
-    pass
+    perform_binary_multiplication()
   elif menu2_choice == "3":
     perform_binary_subtraction()
   elif menu2_choice == "4":
-    perform_binary_addition
+    perform_binary_addition()
   elif menu2_choice == "5":
     binlst = input("Binary to Two's Complement: ").replace(" ", "")
     twoscomp = Two_complement(binlst).switch()
     print(twoscomp)
   else:
     print("Invalid Option")
-
-
-  if menu2_choice == "1":
-    pass
-  elif menu2_choice == "2":
-    pass
-  elif menu2_choice == "3":
-    pass
-  elif menu2_choice == "4":
-    if __name__ == "__main__":
-      main()
-  elif menu2_choice == "5":
-    binlst = input("Binary to Two's Complement: ").replace(" ", "")
-    twoscomp = Two_complement(binlst).switch()
-    print(twoscomp)
-  else:
-    print("Invalid Option")
-
-
 
 def menu3():
   print("Menu - 2 (Conversion)")

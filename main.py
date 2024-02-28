@@ -516,45 +516,6 @@ class BintoX:
 
     return integer_octal + fractional_octal
 
-
-
-  def convert_hexa(self):
-
-    bth_lst = '0' * (4 - (len(str(self.giv_bin)))% 4) + str(self.giv_bin)
-#initializing hex value
-    hex_sum = ""
-
-    for i in range(len(bth_lst), 0, -4):
-
-      grp_lst = bth_lst[max(0, i-4):i]
-      # hex_val = {10:"A", 11:"B", 12:"C", 13:"D", 14:"E", 15:"F"}
-      hex_lst = sum(int(num) * ( 2**(i%4)) for i, num in enumerate(grp_lst[::-1]))
-      # hexa conditions
-      if hex_lst == 10:
-        hex_lst = 'A'
-      elif hex_lst ==11:
-        hex_lst = 'B'
-      elif hex_lst ==12:
-        hex_lst = 'C'
-      elif hex_lst ==13:
-        hex_lst = 'D'
-      elif hex_lst ==14:
-        hex_lst = 'E'
-      elif hex_lst ==15:
-        hex_lst = 'F'
-
-      hex_sum = str(hex_lst) + hex_sum
-    #return value
-    return hex_sum
-    """    
-    test = input("Enter Binary number:  ")
-    # test = 10100
-    x = BintoX(test)
-    print(x.convert_dec())
-    print(x.convert_octal())
-    print(x.convert_hexa())
-    """
-
   def convert_hexa(self, precision=6):
     integer_part, _, fractional_part = str(self.giv_bin).partition('.')
     
@@ -607,6 +568,7 @@ class XtoBin:
     return integer_hex + fractional_hex
 
 # def bin_to_x():
+
 #test = input("Enter Binary number:  ")
 # x = BintoX(test)
 # print(f'Decimal: {x.convert_dec()}')
@@ -678,7 +640,7 @@ class XtoBin:
 
 
   def hex_bin(self):
-    htb_int, _, htb_frac = str(self.given_bin).upper().partition(".") 
+    htb_int, _, htb_frac = str(self.given_bin).upper().partition(".")    
     htb_lst = []
     htb_fracfin = []
 #hex map
@@ -749,7 +711,6 @@ def hex_to_x():
   print(f'Decimal: {y.convert_dec()}')
   print(f'Octal: {y.convert_octal()}')
 
-
 def menu1():
   print("Menu - (Main Menu)")
   menu_choice = input(f"\n[1] Binary Operations \n[2] Number System Conversion \n[3] Exit \n")
@@ -780,7 +741,6 @@ def menu2():
     print(twoscomp)
   else:
     print("Invalid Option")
-
 
 def menu3():
   print("Menu - 2 (Conversion)")

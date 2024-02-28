@@ -104,7 +104,9 @@ def perform_binary_multiplication():
            print(add_sign_extension(z))
 
         elif multiplicand[0] == "1" and multiplier[0] == "1":
-            x = Multiplication(removed_dec_multiplicand, removed_dec_multiplier).multiply_binary()
+            twos_multiplicand = Two_complement(removed_dec_multiplicand).switch()
+            twos_multiplier = Two_complement(removed_dec_multiplier).switch()
+            x = Multiplication(twos_multiplicand, twos_multiplier).multiply_binary()
             z = x[:-deci_places] + "." + x[-deci_places:]
             print(add_sign_extension(z))
         else:
@@ -321,7 +323,8 @@ def perform_binary_addition():
         new_y = y.zfill(len(y) + 1)
         print(add_sign_extension(new_y))
       else:
-        print(add_sign_extension(final_answer))
+        y = final_answer.replace("1", "0", 1)
+        print(add_sign_extension(y))
 
 #CLASSES
 class One_complement:

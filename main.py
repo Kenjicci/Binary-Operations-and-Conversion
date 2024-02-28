@@ -26,6 +26,58 @@ def add_sign_extension(binary_number):
         result += f".{decimal_part}"
     return result
 
+def modify_input(dividend, divisor):
+    def count_decimal_places(num):
+        if "." in num:
+            return len(num.split(".")[1])
+        return 0
+
+    def pad_decimal_places(num, target_deci_places):
+        if "." in num:
+            int_part, dec_part = num.split(".")
+            return int_part + dec_part.ljust(target_deci_places, "0")
+        else:
+            return num + "0" * target_deci_places
+
+    deci_places = max(count_decimal_places(dividend), count_decimal_places(divisor))
+    dividend = pad_decimal_places(dividend, deci_places)
+    divisor = pad_decimal_places(divisor, deci_places)
+
+    return dividend, divisor
+
+
+def perform_binary_division():
+    dividend = input("Dividend: ").replace(" ", "")
+    divisor = input("Divisor: ").replace(" ", "")
+    deci_places = max(count_decimal_places(dividend), count_decimal_places(divisor))
+    modified_dividend, modified_divisor = modify_input(dividend, divisor)
+
+    if dividend[0] == '1' and divisor[0] == '1':
+        twos_dividend = Two_complement(modified_dividend).switch()
+        twos_divisor = Two_complement(modified_divisor).switch()
+        quotient = Division(twos_dividend, twos_divisor).divide_binary()
+        positive_quotient = "0" + quotient.rstrip("0")
+        print(add_sign_extension(positive_quotient))
+
+    elif dividend[0] == '1' and divisor[0] == '0':
+        twos_dividend = Two_complement(modified_dividend).switch()
+        quotient = Division(twos_dividend, modified_divisor).divide_binary()
+        twos_quotient = Two_complement(quotient).switch()
+        negative_quotient = "1" + twos_quotient.rstrip("0")
+        print(add_sign_extension(negative_quotient))
+
+    elif dividend[0] == '0' and divisor[0] == '1':
+        twos_divisor = Two_complement(modified_divisor).switch()
+        quotient = Division(modified_dividend, twos_divisor).divide_binary()
+        twos_quotient = Two_complement(quotient).switch()
+        negative_quotient = "1" + twos_quotient.rstrip("0")
+        print(add_sign_extension(negative_quotient))
+    else:
+        quotient = Division(modified_dividend, modified_divisor).divide_binary()
+        positive_quotient = "0" + quotient.rstrip("0")
+        print(add_sign_extension(positive_quotient))
+
+
 def perform_binary_multiplication():
     multiplicand = input("Multiplicand: ").replace(" ", '')
     multiplier = input("Multiplier: ").replace(" ", '')
@@ -160,7 +212,6 @@ def perform_binary_subtraction():
     if minuend == subtrahend:
         dif = "0"
         print(add_sign_extension(dif))
-        return
 
     if char not in minuend and char not in subtrahend:
         if minuend[0] == '0' and subtrahend[0] == '0':
@@ -309,22 +360,6 @@ class Two_complement:
       result = Addition.binary_addition(inverted_bin, padded_one)
       result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
       return result_with_dec
-    binlst = self.given_bin2
-    if '.' not in binlst:
-      inverted_bin = One_complement(binlst).switch()
-      a = len(inverted_bin)
-      padded_one = '0' * (a - 1) + '1'      
-      result = Addition.binary_addition(inverted_bin, padded_one)
-      print(result)
-    elif "." in binlst:  
-      deci_places = count_decimal_places(binlst)
-      whole_bin = binlst.replace(".", "")
-      inverted_bin = One_complement(whole_bin).switch()
-      a = len(whole_bin)
-      padded_one = '0' * (a - 1) + '1'    
-      result = Addition.binary_addition(inverted_bin, padded_one)
-      result_with_dec = result[:-deci_places] + "." + result[-deci_places:]
-      print(result_with_dec)
 
 class Addition:
   @staticmethod
@@ -397,14 +432,49 @@ class Multiplication:
                 break
         return count
     
-class Division:
-  def __init__(self, dividend, divisor):
-    self.dividend = dividend
-    self.divisor = divisor
 
-  def quotient(self):
-    pass
- 
+class Division:
+    def __init__(self, dividend, divisor):
+        self.dividend = dividend
+        self.divisor = divisor
+
+    def count_leading_zeroes(self, binary_str):
+        return len(binary_str) - len(binary_str.lstrip('0'))
+
+    def divide_binary(self):
+        num1 = int(self.dividend.replace(".", ""), 2)
+        num2 = int(self.divisor.replace(".", ""), 2)
+        quotient = 0
+        remainder = 0
+        leading_zeroes = self.count_leading_zeroes(self.dividend) - self.count_leading_zeroes(self.divisor)
+        
+
+        while num1 >= num2:
+            temp = num2
+            multiple = 1
+            while temp <= num1:
+                temp <<= 1
+                multiple <<= 1
+            temp >>= 1
+            multiple >>= 1
+            num1 -= temp
+            quotient += multiple
+        
+        remainder = num1
+        quotient_str = bin(quotient)[2:]
+        
+
+        decimal_str = ""
+        for _ in range(8): 
+            num1 <<= 1
+            if num1 >= num2:
+                num1 -= num2
+                decimal_str += "1"
+            else:
+                decimal_str += "0"
+        
+        return '0' * leading_zeroes + quotient_str + "." + decimal_str
+  
 class BintoX:
   def __init__(self,giv_bin):
     self.giv_bin = giv_bin
@@ -658,7 +728,7 @@ def menu2():
   print("Menu - 1 (Binary Operations)")
   menu2_choice = input(f"\n[1] Division \n[2] Multiplication \n[3] Subtraction \n[4] Addition \n[5] Negative (2's Complement) \n")
   if menu2_choice == "1":
-    pass
+    perform_binary_division()
   elif menu2_choice == "2":
     perform_binary_multiplication()
   elif menu2_choice == "3":
